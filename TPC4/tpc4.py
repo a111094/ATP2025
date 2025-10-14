@@ -1,106 +1,107 @@
-###funções
-MainList=[]
+sala1=["Sala 1",60,[],"Mamma Mia"]
+sala2=["Sala 2",60,[],"O Rei leao"]
+sala3=["Sala 3",55,[],"Dune"]
+sala4=["Sala 4",40,[],"A orfa"]
+
+Cinema=[sala1,sala2,sala3,sala4]
 import random
 
-def criaLista(N):
-    global MainList
-    MainList=[] 
-    n = 1
-    while n <= N:
-        n = n + 1
-        MainList.append(random.randrange(1,101))
-    return MainList
 
-def leLista(N):
-    global MainList
-    MainList=[] 
-    k = 0
-    while k < N:
-        k = k + 1
-        MainList.append(int(input("introduza um número"))) 
-    return MainList
 
-def somaLista(N):
-        global MainList
-        soma = 0
-        for n in N:
-            soma = soma + n             
-        return (soma)
+def listar(cinema):
+    print("--------Cartaz--------")
+    for sala in cinema:
+        print(sala[0]+str(": ")+sala[3],flush=True)
+    return
 
-def mediaLista(N):
-        global MainList
-        soma = 0
-        for n in N:
-            soma = soma + n             
-        return (soma/len(MainList))
 
-def maiorLista(N):
-        global MainList
-        maior=N[0]
-        for x in N:
-                if x>maior:
-                    maior=x
-        return maior
+def disponivel(Cinema,filme,lugar):
+    disponibilidade=False
+    for sala in Cinema:
+        if filme == sala[3] and lugar  not in sala[2]:            
+                disponibilidade=True
+    return disponibilidade
+
+def vendeBilhete(Cinema,filme,modo):
+    if modo=="Não": ###Escolhe um número aleatório dos lugares daquela sala
+        for sala in Cinema:
+            if filme==sala[3]:
+                res = ""
+                while res != "aceite":
+                    lugar = random.randrange(1,sala[1]+1) 
+                    if disponivel(Cinema, filme, lugar): 
+                        sala[2].append(lugar)
+                        print("O lugar "+str(lugar)+" foi reservado com sucesso, bom filme!")
+                        print(sala)
+                        res = "aceite"
+                    else:
+                        res = "recusado"
         
-def menorLista(N):
-        global MainList
-        menor=N[0]
-        for x in N:
-                if x<menor:
-                    menor=x
-        return menor
 
-def estaOrdenadaC(N):
-        global MainList
-        for i in range(len(N) - 1):
-            if N[i] > N[i + 1]:
-                return "Não"
-        return "Sim"
-
-def estaOrdenadaD(N):
-        global MainList
-        for i in range(len(N) - 1):
-            if N[i] < N[i + 1]:
-                return "Não"
-        return "Sim"
-
-def indiceDe(N, elem):
-    cond=-1
-    if elem in N:
-        cond=N.index(elem)+1
-    return cond
-
-modo=-1
-
-while modo != 0:
-    modo = int(input("""Crie uma aplicação em Python que coloca no monitor o seguinte menu:\n(1) Criar Lista\n(2) Ler Lista\n(3) Soma\n(4) Média\n(5) Maior\n(6) Menor\n(7) estaOrdenada por ordem crescente\n(8) estaOrdenada por ordem decrescente\n(9) Procura um elemento\n(0) Sair"""))
+    if modo=="Sim":###Escolhe o lugar que o utilizador inserir
+        for sala in Cinema:
+            if filme==sala[3]:
+                lugar = int(input("Escolha o lugar que quer"))
+                if disponivel(Cinema,filme,lugar):
+                    sala[2].append(lugar)
+                    print("O lugar "+str(lugar)+" foi reservado com sucesso, bom filme!")
+                    print(sala)
+                else:
+                    print("Este lugar já está ocupado, escolha outro!")
     
-    if modo == 1:
-        print(criaLista(int(input("Intoduza o total de números que quer na lista"))))
-    elif modo == 2:
+
+def listarDisponibilidades(Cinema):
+    print("Estes são os filmes disponiveis no cinema:")
+    for sala in Cinema:
+        x= sala[1] - len(sala[2]) 
         
-        print(leLista(int(input("Intoduza o total de números que quer na lista"))))
-    elif modo == 3:
+        print(sala[0] + ", com "+str(x)+" lugares disponiveis.")
+    return    
         
-        print(somaLista(MainList))
-    elif modo == 4:
-        
-        print(mediaLista(MainList))
-    elif modo == 5:
-                 
-        print(maiorLista(MainList))
-    elif modo == 6:
-        
-        print(menorLista(MainList))
-    elif modo == 7:
-        resultado=estaOrdenadaC(MainList)
-        print(resultado)
-    elif modo == 8:
-        resultado2=estaOrdenadaD(MainList)
-        print(resultado2)
-    elif modo == 9:
-        print(MainList)
-        print(indiceDe(MainList,int(input("procura um número"))))
+
+
+
+def inserirSala( cinema, sala, lotação, filme ):
+    sala=[sala,lotação,[],filme]
+    
+    
+    if sala not in cinema:
+        cinema.append(sala)
+    print("A sala foi adicionada com sucesso!")
+    print(sala[0]+": com lotação de "+str(sala[1])+" lugares. Filme em exibição: "+sala[3],flush=True)
+    
+
+
+
+menu=-1
+print("""Bom dia! Obrigado por escolher o nosso Cinema, aqui estão os próximos passos: 
+      (1) Listar todos os filmes em exibição;
+      (2) Verificar a disponibilidade da sala e do lugar;
+      (3) Comprar bilhete, somente após verificar a disponibilidade;
+      (4) Listar os lugares restantes em cada sala;
+      (5) Adiciona uma sala ao cinema;
+      (6) Fechar o menu.""")
+while menu !=6:
+    menu=int(input("Escolhe a tua opção."))
+
+    if menu==1:
+        listar(Cinema)
+
+    elif menu ==2:
+        print(disponivel(Cinema,input("Escolhe o filme que queres ver"),int(input("Escolhe um lugar da sala"))))
+
+    elif menu ==3:
+        vendeBilhete(Cinema,input("Escolhe o filme que queres ver"), input("Deseja escolher o lugar?(Sim ou Não)"))
+
+    
+    elif menu ==4:
+        listarDisponibilidades(Cinema)
+
+    elif menu ==5:
+        inserirSala(Cinema,input("Qual o nome da nova sala?"),int(input("Qual a lotação da sala?")),input(("Qual o filme em exibição?")))
+    
+print("Obrigado e Volte Sempre!")
+
 
 
 
